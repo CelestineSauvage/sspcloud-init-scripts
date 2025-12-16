@@ -19,7 +19,7 @@ if command -v rstudio-server &>/dev/null; then
         echo "[INFO] Repository directory resolved to: ${PROJECT_PATH}"
 
         echo "[INFO] Checking for .rproj file in repository..."
-        if compgen -G "${PROJECT_PATH}/*.rproj" > /dev/null; then
+        if compgen -G "${PROJECT_PATH}/*.Rproj" > /dev/null; then
             echo "[OK] .rproj file found, configuring RStudio hook"
 
             echo "setHook('rstudio.sessionInit', function(newSession) { \

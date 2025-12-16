@@ -5,19 +5,17 @@
 # Expected parameters : None
 
 # Clone repository and give permissions to the onyxia user
-GIT_REPO=sspcloud-init-scripts
-git clone --depth 1 https://github.com/InseeFrLab/${GIT_REPO}.git
-chown -R onyxia:users ${GIT_REPO}/
+if command -v rstudio-server &>/dev/null; then 
+    if [[ -n "$GIT_REPOSITORY" ]]; then
+        REPO_DIR=$(basename "$GIT_REPOSITORY" .git)
+        PROJECT_PATH="${WORKSPACE_DIR}/${REPO_DIR}"
 
-# Open the project
-PROJECT_DIR=${WORKSPACE_DIR}/${GIT_REPO}/inputs
-echo \
-"
-setHook('rstudio.sessionInit', function(newSession) {
-  if (newSession && identical(getwd(), '${WORKSPACE_DIR}'))
-  {
-    message('Activation du projet RStudio')
-    rstudioapi::openProject('${PROJECT_DIR}')
-  }
-}, action = 'append')
-" >> /home/onyxia/.Rprofile
+        if compgen -G "${PROJECT_PATH}/*.rproj" > /dev/null; then
+            echo "setHook('rstudio.sessionInit', function(newSession) { \
+if (newSession && identical(getwd(), '${WORKSPACE_DIR}')) { \
+message('Activate RStudio project'); \
+rstudioapi::openProject('${PROJECT_PATH}'); \
+} }, action = 'append')" >> "${HOME}/.Rprofile"
+        fi
+    fi
+fi

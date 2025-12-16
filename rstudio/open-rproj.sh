@@ -9,14 +9,10 @@
 if command -v rstudio-server &>/dev/null; then 
     if [[ -n "$GIT_REPOSITORY" ]]; then
         REPO_DIR=$(basename "$GIT_REPOSITORY" .git)
-        PROJECT_PATH="${WORKSPACE_DIR}/${REPO_DIR}"
-
-        if compgen -G "${PROJECT_PATH}/*.Rproj" > /dev/null; then
-            echo "setHook('rstudio.sessionInit', function(newSession) { \
-if (newSession && identical(getwd(), '${WORKSPACE_DIR}')) { \
-message('Activate RStudio project'); \
-rstudioapi::openProject('${PROJECT_PATH}'); \
-} }, action = 'append')" >> "${HOME}/.Rprofile"
+        echo "Checking for .Rproj file in repository..."
+        if compgen -G "${WORKSPACE_DIR}/${REPO_DIR}/*.Rproj" > /dev/null; then
+            echo ".Rproj file found, configuring RStudio hook to activate RStudio project"
+            echo "setHook('rstudio.sessionInit', function(newSession) { if (newSession && identical(getwd(), '${WORKSPACE_DIR}')) { message('Activate RStudio project'); rstudioapi::openProject('${REPO_DIR}'); } }, action = 'append')" >> ${HOME}/.Rprofile
         fi
     fi
 fi
